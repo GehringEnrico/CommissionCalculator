@@ -10,9 +10,17 @@ namespace FCamara.CommissionCalculator.Controllers
         [HttpPost]
         public IActionResult Calculate(CommissionCalculationRequest calculationRequest)
         {
-            return Ok(new CommissionCalculationResponse() { 
-                FCamaraCommissionAmount = 999,
-                CompetitorCommissionAmount = 100
+            // FCamera
+            decimal fcLocal = calculationRequest.LocalSalesCount * calculationRequest.AverageSaleAmount * 0.2m;
+            decimal fcForeign = calculationRequest.ForeignSalesCount * calculationRequest.AverageSaleAmount * 0.35m;
+
+            // Competitor
+            decimal competitorLocal = calculationRequest.LocalSalesCount * calculationRequest.AverageSaleAmount * 0.02m;
+            decimal competitorForeign = calculationRequest.ForeignSalesCount * calculationRequest.AverageSaleAmount * 0.0755m;
+
+            return Ok(new CommissionCalculationResponse() {
+                FCamaraCommissionAmount = fcLocal + fcForeign,
+                CompetitorCommissionAmount = competitorLocal + competitorForeign
             });
         }
     }

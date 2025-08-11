@@ -1,21 +1,57 @@
-import logo from './logo.svg';
 import './App.css';
-
-function calculate(){
-  // Get calculation from the backend
-  // Update results area
-}
+import React, { useState } from 'react';
 
 function App() {
 
-  const totalFcamaraCommission = 50;
-  const totalCompetitorCommission = 10;
+  const [totalFcamaraCommission, setTotalFcamaraComission] = useState(0);
+  const [totalCompetitorCommission, setTotalCompetitorCommission] = useState(0);
+
+  async function calculate(event) {
+    // Get calculation from the backend
+    // Update results area
+    event.preventDefault(); // Prevent form submission from reloading the page
+
+    const form = event.target;
+    const localSalesCount = Number(form.localSalesCount.value);
+    const foreignSalesCount = Number(form.foreignSalesCount.value);
+    const averageSaleAmount = Number(form.averageSaleAmount.value);
+
+    console.log("Calculating...: " + localSalesCount + ", " + foreignSalesCount + ", " + averageSaleAmount);
+
+    try {
+      const response = await fetch('https://localhost:5000/Commision', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          localSalesCount,
+          foreignSalesCount,
+          averageSaleAmount,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log("Calculation result: ", data);
+      
+      // Update the total commission values based on the response
+      setTotalFcamaraComission(data.fCamaraCommissionAmount);
+      setTotalCompetitorCommission(data.competitorCommissionAmount);
+
+    } catch (error) {
+      console.error('Error during calculation:', error);
+      alert('An error occurred while calculating. Please try again.');
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <div>
         </div>
-        <form action={calculate}>
+        <form onSubmit={calculate}>
           <label for="localSalesCount">Local Sales Count</label>  
           <input name="localSalesCount" /><br />
 
